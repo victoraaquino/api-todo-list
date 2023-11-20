@@ -1,45 +1,75 @@
-import { fastify } from 'fastify'
+import { fastify } from 'fastify';
 import { DatabaseMemory } from "./database-memory.js";
+import constants from './constants.js';
 
-const server = fastify()
+const server = fastify();
 const database = new DatabaseMemory();
 
 server.post('/todo', (request, reply) => {
     const { description, checked } = request.body
 
-    database.create({
+    if (!description || typeof checked === 'undefined'){
+        return reply.status(400).send({
+            error: constants.MISSING_VARIABLES
+        });
+    }
+
+    const newItem ={
         description,
         checked
-    })
+    };
 
-    return reply.status(201).send()
-})
+    const itemId = database.create(newItem)
+
+    return reply.status(201).send({
+        id: itemId,
+        ...newItem
+    });
+});
 
 server.get('/todo', (request) => {
-    const id = request.query.id
-    const items = database.list(id)
-    return items
+    const id = request.query.id;
+    const items = database.list(id);
+    return items;
 })
 
-server.put('/todo/:id', (request, reply) => {
-    const itemId = request.params.id
-    const { description, checked } = request.body
+server.put('/todo/:id*?', (request, reply) => {
+    const itemId = request.params.id ? request.params.id.replace(/\/$/, '') : undefined;
+
+    if (!request.params.id) {
+        return reply.status(400).send({
+            error: constants.MISSING_ID
+        });
+    }
+
+    const { description, checked } = request.body;
+    const currentItem = database.getItem(itemId);
+
+    const updatedDescription = description !== undefined ? description : currentItem.description;
+    const updatedChecked = checked !== undefined ? checked : currentItem.checked;
 
     database.update(itemId, {
-        description,
-        checked
+        updatedDescription,
+        updatedChecked
     })
 
-    return reply.status(204).send()
+    return reply.status(204).send();
 })
 
-server.delete('/todo/:id', (request, reply) => {
-    const itemId = request.params.id
-    database.delete(itemId)
+server.delete('/todo/:id*?', (request, reply) => {
+    const itemId = request.params.id ? request.params.id.replace(/\/$/, '') : undefined;
 
-    return reply.status(204).send()
+    if (!request.params.id) {
+        return reply.status(400).send({
+            error: constants.MISSING_ID
+        });
+    }
+
+    database.delete(itemId);
+
+    return reply.status(204).send();
 })
 
 server.listen({
     port: 3333
-})
+});

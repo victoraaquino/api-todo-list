@@ -26,6 +26,7 @@ export class DatabaseMemory {
     create(item) {
         const itemId = randomUUID()
         this.#items.set(itemId, item)
+        return itemId;
     }
 
     update(id, item) {
