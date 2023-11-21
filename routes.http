@@ -1,3 +1,15 @@
+### Listar Todos as tarefas
+
+GET http://localhost:3333/todo
+
+
+### Obter tarefa por ID
+
+GET http://localhost:3333/todo?id=be5721fc-98a2-45df-8e01-de4bb63ffcef
+
+
+### Adicionar uma nova tarefa
+
 POST http://localhost:3333/todo
 Content-Type: application/json
 
@@ -6,15 +18,8 @@ Content-Type: application/json
     "checked": false
 }
 
-###
 
-GET http://localhost:3333/todo
-
-###
-
-GET http://localhost:3333/todo?id=be5721fc-98a2-45df-8e01-de4bb63ffcef
-
-###
+### Atualizar uma tarefa por ID
 
 PUT http://localhost:3333/todo/be5721fc-98a2-45df-8e01-de4bb63ffcef
 Content-Type: application/json
@@ -24,6 +29,7 @@ Content-Type: application/json
     "checked": true
 }
 
-###
+
+### Excluir uma tarefa por ID
 
 DELETE http://localhost:3333/todo/a222adbd-5e8b-414f-987a-cc4c26886155

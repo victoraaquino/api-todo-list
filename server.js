@@ -33,17 +33,17 @@ server.get('/todo', (request) => {
     return items;
 })
 
-server.put('/todo/:id*?', (request, reply) => {
-    const itemId = request.params.id ? request.params.id.replace(/\/$/, '') : undefined;
+server.put('/todo/:id', (request, reply) => {
+    const itemId = request.params.id
 
-    if (!request.params.id) {
+    if (!itemId) {
         return reply.status(400).send({
             error: constants.MISSING_ID
         });
     }
 
     const { description, checked } = request.body;
-    const currentItem = database.getItem(itemId);
+    const currentItem = database.list(itemId);
 
     const updatedDescription = description !== undefined ? description : currentItem.description;
     const updatedChecked = checked !== undefined ? checked : currentItem.checked;
@@ -53,13 +53,16 @@ server.put('/todo/:id*?', (request, reply) => {
         updatedChecked
     })
 
-    return reply.status(204).send();
+    return reply.status(200).send({
+        id: itemId,
+        message: constants.CHANGED_TASK
+    });
 })
 
-server.delete('/todo/:id*?', (request, reply) => {
-    const itemId = request.params.id ? request.params.id.replace(/\/$/, '') : undefined;
+server.delete('/todo/:id', (request, reply) => {
+    const itemId = request.params.id
 
-    if (!request.params.id) {
+    if (!itemId) {
         return reply.status(400).send({
             error: constants.MISSING_ID
         });
@@ -67,7 +70,10 @@ server.delete('/todo/:id*?', (request, reply) => {
 
     database.delete(itemId);
 
-    return reply.status(204).send();
+    return reply.status(200).send({
+        id: itemId,
+        message: constants.DELETED_TASK
+    });
 })
 
 server.listen({
