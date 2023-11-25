@@ -1,7 +1,7 @@
 {
   "name": "api-todo-list",
   "version": "1.0.0",
-  "description": "",
+  "description": "API de Listagem e Controle de Tarefas Local",
   "main": "server.js",
   "type": "module",
   "scripts": {
